@@ -2,9 +2,9 @@
 from osv import fields,osv
 import time
 
-class report_thai_tax_wizard(osv.osv_memory):
+class sqp_report_thai_tax_wizard(osv.osv_memory):
     
-    _name = 'report.thai.tax.wizard'
+    _name = 'sqp.report.thai.tax.wizard'
     
     def onchange_tax_id(self, cr, uid, ids, tax_id, context=None):
         if not tax_id:
@@ -57,8 +57,8 @@ class report_thai_tax_wizard(osv.osv_memory):
             data['form']['type_tax_use'] = wiz_obj['type_tax_use']
             return {
                     'type': 'ir.actions.report.xml',
-                    'report_name': 'report_thai_tax',
+                    'report_name': 'sqp_report_thai_tax',
                     'datas': data,
             }
             
-report_thai_tax_wizard()
+sqp_report_thai_tax_wizard()

@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Input/Output Tax Report for Thailand',
+    'name': 'Input/Output Tax Report for SQP (Oct 14)',
     'version': '1.0',
     'category': 'Thai Localisation',
     'description': """
@@ -32,8 +32,7 @@
     'init_xml': [],
     'update_xml': [
         "reports.xml",
-        "account_menuitem.xml",
-        "wizard/report_thai_tax_wizard.xml",
+        "wizard/sqp_report_thai_tax_wizard.xml",
     ],
     'demo_xml': [],
     'installable': True,

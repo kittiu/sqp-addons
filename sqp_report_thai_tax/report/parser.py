@@ -8,7 +8,7 @@ from osv import osv,fields
 import pooler
 import datetime
 
-def report_thai_tax_parser( cr, uid, ids, data, context ):
+def sqp_report_thai_tax_parser( cr, uid, ids, data, context ):
     return {
         'parameters': {	
             'company_id': data['form']['company_id'],
@@ -21,7 +21,7 @@ def report_thai_tax_parser( cr, uid, ids, data, context ):
    }
 
 jasper_reports.report_jasper(
-    'report.report_thai_tax',
+    'report.sqp_report_thai_tax',
     'account.move',
-    parser=report_thai_tax_parser
+    parser=sqp_report_thai_tax_parser
 )
