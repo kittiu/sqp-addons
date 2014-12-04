@@ -5,7 +5,7 @@
         <field name="name">sqp.job.cost.sheet.tree</field>
         <field name="model">sqp.job.cost.sheet</field>
         <field name="arch" type="xml">
-            <tree create="false" string="Job Cost Sheet" colors="red:profit_amount &lt; 0)">
+            <tree create="false" string="Job Cost Sheet" > <!-- colors="red:profit_amount &lt; 0)" -->
             	<field name="name"/>
                 <field name="partner_id" />
 				<field name="ref_project_name"/>            	
@@ -334,6 +334,7 @@
         <field name="context">{'group_by':[], 'group_by_no_leaf':0,}</field>
         <field name="search_view_id" ref="view_sqp_job_cost_sheet_search"/>
         <field name="help">From this report, you can have an overview of cost sheet by Sales order</field>
+        <field name="limit">10</field>
     </record>
 
     <menuitem action="action_sqp_job_cost_sheet" id="menu_action_sqp_job_cost_sheet" parent="menu_sqp_job_cost_sheet" sequence="20"/>

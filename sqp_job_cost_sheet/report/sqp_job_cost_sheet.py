@@ -50,28 +50,56 @@ class sqp_job_cost_sheet(osv.osv):
                 'total_cost_percent': 0.0,
                 'profit_percent': 0.0,
             }
-            for line in order.mrp_main_rm_list:
-                res[order.id]['mrp_main_rm_amount'] += line.price_subtotal
-            for line in order.mrp_rm_list:
-                res[order.id]['mrp_rm_amount'] += line.price_subtotal
-            for line in order.labor_list:
-                res[order.id]['labor_amount'] += line.amount
-            for line in order.transport_list:
-                res[order.id]['transport_amount'] += line.amount
-            for line in order.electric_list:
-                res[order.id]['electric_amount'] += line.amount
-            for line in order.supply_list:
-                res[order.id]['supply_list_amount'] += line.price_subtotal
-            for line in order.po_subcontract:
-                res[order.id]['subcontract_amount'] += line.price_subtotal
-            for line in order.expense_list:
-                res[order.id]['expense_list_amount'] += line.price_subtotal
-            for line in order.plane_ticket_invoice_list:
-                res[order.id]['plane_ticket_invoice_list_amount'] += line.price_subtotal
-            for line in order.comm_install_invoice_list:
-                res[order.id]['comm_install_invoice_list_amount'] += line.price_subtotal
-            for line in order.other_invoice_list:
-                res[order.id]['other_invoice_list_amount'] += line.price_subtotal
+
+            cr.execute("""select sum(price_subtotal) from sqp_job_cost_sheet_mrp_rm_list a 
+                            join product_product b on b.id = a.product_id
+                            where a.order_id = %s and b.main_material = %s""", (order.id, True))
+            res[order.id]['mrp_main_rm_amount'] = cr.fetchone()[0] or 0.0    
+            
+            cr.execute("""select sum(price_subtotal) from sqp_job_cost_sheet_mrp_rm_list a 
+                            join product_product b on b.id = a.product_id
+                            where a.order_id = %s and b.main_material = %s""", (order.id, False))
+            res[order.id]['mrp_rm_amount'] = cr.fetchone()[0] or 0.0         
+            
+            cr.execute("""select sum(amount) from sqp_job_book_labor
+                            where order_id = %s""", (order.id,))
+            res[order.id]['labor_amount'] = cr.fetchone()[0] or 0.0 
+             
+            cr.execute("""select sum(amount) from sqp_job_book_transport
+                            where order_id = %s""", (order.id,))
+            res[order.id]['transport_amount'] = cr.fetchone()[0] or 0.0 
+            
+            cr.execute("""select sum(amount) from sqp_job_book_electric
+                            where order_id = %s""", (order.id,))
+            res[order.id]['electric_amount'] = cr.fetchone()[0] or 0.0 
+            
+            cr.execute("""select sum(price_subtotal) from sqp_job_cost_sheet_supply_list
+                            where order_id = %s""", (order.id,))
+            res[order.id]['supply_list_amount'] = cr.fetchone()[0] or 0.0 
+            
+            cr.execute("""select sum(price_subtotal) from sqp_job_cost_sheet_po_subcontract
+                            where order_id = %s""", (order.id,))
+            res[order.id]['subcontract_amount'] = cr.fetchone()[0] or 0.0 
+
+            cr.execute("""select sum(price_subtotal) from sqp_job_cost_sheet_expense_list
+                            where order_id = %s""", (order.id,))
+            res[order.id]['expense_list_amount'] = cr.fetchone()[0] or 0.0 
+            
+            cr.execute("""select sum(price_subtotal) from sqp_job_cost_sheet_invoice_list a 
+                            join product_product b on b.id = a.product_id
+                            where a.order_id = %s and b.job_cost_type = %s""", (order.id, 'plane_ticket'))
+            res[order.id]['plane_ticket_invoice_list_amount'] = cr.fetchone()[0] or 0.0      
+
+            cr.execute("""select sum(price_subtotal) from sqp_job_cost_sheet_invoice_list a 
+                            join product_product b on b.id = a.product_id
+                            where a.order_id = %s and b.job_cost_type = %s""", (order.id, 'comm_install'))
+            res[order.id]['comm_install_invoice_list_amount'] = cr.fetchone()[0] or 0.0            
+
+            cr.execute("""select sum(price_subtotal) from sqp_job_cost_sheet_invoice_list a 
+                            join product_product b on b.id = a.product_id
+                            where a.order_id = %s and b.job_cost_type = %s""", (order.id, None))
+            res[order.id]['other_invoice_list_amount'] = cr.fetchone()[0] or 0.0    
+            
             # Commisison Amount
             cwl_ids = self.pool.get('commission.worksheet.line').search(cr, uid, [('order_id', '=', order.id), ('commission_state', 'in', ('valid', 'done'))])
             for cwl in self.pool.get('commission.worksheet.line').read(cr, uid, cwl_ids, ['commission_amt']):
@@ -426,7 +454,7 @@ class sqp_job_cost_sheet_mrp_rm_list(osv.osv):
             select min(id) id, order_id, product_id, product_code, product_uom, sum(planned_qty) planned_qty, sum(actual_qty) actual_qty, avg(price_unit) price_unit, sum(price_subtotal) price_subtotal
             from (
                   select a.id, a.order_id, a.product_id, pp.default_code product_code, a.product_uom, a.planned_qty, a.actual_qty, (pt.standard_price * uom.factor) as price_unit, (pt.standard_price * uom.factor * a.actual_qty) price_subtotal
-                  from (select * from
+                  from (select id, x.order_id, x.product_id, product_uom, planned_qty, actual_qty from
                   (select plan.id, plan.order_id, plan.product_id, plan.product_uom, plan.planned_qty, actual.actual_qty from
                     -- Planned
                     (select mrp.order_id, mpl.product_id, mpl.product_uom, min(mpl.id) as id, sum(mpl.product_qty) as planned_qty
@@ -443,23 +471,25 @@ class sqp_job_cost_sheet_mrp_rm_list(osv.osv):
                     group by  mrp.order_id, sm.product_id) actual
                     on actual.product_id = plan.product_id and actual.order_id = plan.order_id) x
                     -- Not include those in internal move
-                    where (x.order_id, x.product_id) not in (select sp.ref_order_id, product_id
-                    from stock_picking sp
-                    join stock_move sm on sm.picking_id = sp.id
-                    where sp.type = 'internal' and sp.state = 'done' and sp.ref_order_id is not null)
-                    -- Union Internal Move
-                    --- (It might be possible also for internal move to join with planned, to get the planned amount.
-                    ---  But it might cause even more performance drop)
-                    union
-                    (select sm.id, sp.ref_order_id order_id, product_id, product_uom, 0 as planned_qty, product_qty actual_qty
-                    from stock_picking sp
-                    join stock_move sm on sm.picking_id = sp.id
-                    where sp.type = 'internal' and sp.state = 'done' and sp.ref_order_id is not null)) a
-                  join product_uom uom on uom.id = a.product_uom
-                  join product_product pp on pp.id = a.product_id
-                  join product_template pt on pt.id = pp.product_tmpl_id
-                  order by pp.default_code) b
-                group by order_id, product_id, product_code, product_uom
+                            left join (select sp.ref_order_id, product_id
+                            from stock_picking sp
+                            join stock_move sm on sm.picking_id = sp.id
+                            where sp.type = 'internal' and sp.state = 'done' and sp.ref_order_id is not null) y
+                            on x.order_id = y.ref_order_id and x.product_id = y.product_id
+                            where y.ref_order_id is null and y.product_id is null
+                            -- Union Internal Move
+                            --- (It might be possible also for internal move to join with planned, to get the planned amount.
+                            ---  But it might cause even more performance drop)
+                            union
+                            (select sm.id, sp.ref_order_id order_id, product_id, product_uom, 0 as planned_qty, product_qty actual_qty
+                            from stock_picking sp
+                            join stock_move sm on sm.picking_id = sp.id
+                            where sp.type = 'internal' and sp.state = 'done' and sp.ref_order_id is not null)) a
+                          join product_uom uom on uom.id = a.product_uom
+                          join product_product pp on pp.id = a.product_id
+                          join product_template pt on pt.id = pp.product_tmpl_id
+                          order by pp.default_code) b
+                        group by order_id, product_id, product_code, product_uom
         )""" % (self._table,))
 
 sqp_job_cost_sheet_mrp_rm_list()
