@@ -12,5 +12,18 @@
 				</field>        
 	    	</field>
 	    </record>
+	    
+        <record model="ir.cron" id="cronjob_vacumm_bom">
+            <field name='name'>Vacumm BOM (improve performance)</field>
+            <field name='interval_number'>30</field>
+            <field name='interval_type'>minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="doall" eval="False" />
+            <field name="model">mrp.bom</field>
+            <field name="function">process_vacumm_bom</field>
+            <field name="args">()</field>
+        </record>
+
     </data>
 </openerp>
