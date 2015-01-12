@@ -3,7 +3,7 @@
     <data>
         <record id="sqp_report_thai_tax_wizard" model="ir.ui.view">
             <field name="name">Tax Report</field>
-            <field name="model">report.thai.tax.wizard</field>
+            <field name="model">sqp.report.thai.tax.wizard</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Selection Criteria">
@@ -26,7 +26,7 @@
 
         <record id="action_sqp_report_thai_tax" model="ir.actions.act_window">
             <field name="name">VAT Report (Oct 14)</field>
-            <field name="res_model">report.thai.tax.wizard</field>
+            <field name="res_model">sqp.report.thai.tax.wizard</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="sqp_report_thai_tax_wizard"/>
