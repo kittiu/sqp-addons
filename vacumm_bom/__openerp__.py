@@ -176,10 +176,11 @@ and bom_id is null
 union select id from mrp_bom where bom_id in (select id from mrp_bom
     where product_id in 
     (select pp.id from product_product pp join product_template pt on pt.id = pp.product_tmpl_id where categ_id = 5)
-    and bom_id is null);
+    and bom_id is null)
 );
 
 
+insert into mrp_bom_bk select * from mrp_bom;
 
 
 """,

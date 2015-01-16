@@ -31,6 +31,7 @@ class mrp_bom(osv.osv):
     def process_vacumm_bom(self, cr, uid, journal_ids=None, context=None):
         
         try:
+            print '--> Start'
             cr.execute("""
                 delete from mrp_bom where id not in 
                 (
@@ -54,9 +55,10 @@ class mrp_bom(osv.osv):
                 union select id from mrp_bom where bom_id in (select id from mrp_bom
                     where product_id in 
                     (select pp.id from product_product pp join product_template pt on pt.id = pp.product_tmpl_id where categ_id = 5)
-                    and bom_id is null);
+                    and bom_id is null)
                 );
             """)
+            print '--> End'
         except Exception:
             _logger.exception("Failed processing vacumm bom")
 
