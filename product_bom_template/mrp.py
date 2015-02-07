@@ -120,12 +120,17 @@ class mrp_bom(osv.osv):
             context = {}
         context = context.copy()
         context['bom_formula'] = True
-        data = self.copy_data(cr, uid, id, default, context)
+        data = False
+        if context.get('bom_data', False):
+            data = context.get('bom_data', False)
+        else:
+            data = self.copy_data(cr, uid, id, default, context)
+        bom_data = data.copy()
         self.update_quantity_by_formula(cr, uid, object, line, data)
         new_id = self.create(cr, uid, data, context)
         self.copy_translations(cr, uid, id, new_id, context)
-        return new_id
-    
+        return new_id, bom_data
+            
     # Only create record if qty > 0 and of type bom_formula
     def create(self, cr, uid, vals, context=None):
         if context ==  None:

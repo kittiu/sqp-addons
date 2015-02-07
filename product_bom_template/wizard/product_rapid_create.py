@@ -194,6 +194,8 @@ class product_rapid_create(osv.osv):
         if not len(lines):
             return False
         
+        new_id, old_id = 0, 0
+        
         for line in lines:
             bom_template = line.bom_template_id
             # If template, then continue, else, stop
@@ -241,10 +243,18 @@ class product_rapid_create(osv.osv):
                     'is_bom_template': False,
                     'bom_template_type': None
                 }                
-                new_bom_id = bom_obj.copy_bom_formula(cr, uid, bom_template.id,
+                
+                # Performance Tuning
+                new_id = bom_template.id
+                if new_id != old_id:
+                    context.update({'bom_data': False})
+                new_bom_id, bom_data = bom_obj.copy_bom_formula(cr, uid, bom_template.id,
                                           object, line,
                                           default = {}, 
                                           context=context)
+                old_id = bom_template.id
+                context.update({'bom_data': bom_data})
+                # --
                 bom_obj.write(cr, uid, new_bom_id, res)
                 
         # Return
