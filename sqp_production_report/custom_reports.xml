@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+    <record id="sqp_report_production_status" model="ir.actions.report.xml">
+        <field name="name">Production Status Report</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">pawn.order</field>
+        <field name="report_name">sqp_report_production_status</field>
+        <field name="report_rml">sqp_production_report/sqp_report_production_status.jrxml</field>
+        <field name="report_type">pdf</field>
+        <field name="jasper_report">True</field>
+        <field name="jasper_output">pdf</field>
+    </record>    
+    <record id="sqp_report_production_status_excel" model="ir.actions.report.xml">
+        <field name="name">Production Status Report (Excel)</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">pawn.order</field>
+        <field name="report_name">sqp_report_production_status_excel</field>
+        <field name="report_rml">sqp_production_report/sqp_report_production_status.jrxml</field>
+        <field name="report_type">pdf</field>
+        <field name="jasper_report">True</field>
+        <field name="jasper_output">xls</field>
+    </record>   
+</data>
+</openerp>
