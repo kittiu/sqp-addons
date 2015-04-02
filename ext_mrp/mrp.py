@@ -66,7 +66,8 @@ class mrp_production(osv.osv):
         'sale_picking_ids': fields.related('order_id', 'picking_ids', type='one2many', relation='stock.picking.out', string='Pickings of related SO', readonly=True),
         'partner_id': fields.related('order_id', 'partner_id', type='many2one', relation='res.partner', string='Customer', readonly=True, store=True),
         'is_printed': fields.boolean('Printed'),
-        'note': fields.text('Remark')
+        'note': fields.text('Remark'),
+        'short_note': fields.char('Short Note', size=256, required=False, readonly=False),
     }
     _constraints = [
         (_check_submo_valid,
