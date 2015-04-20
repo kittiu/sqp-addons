@@ -17,6 +17,20 @@
         <field name="jasper_output">pdf</field>
     </record>
     
+	<report string="Test"
+        model="sale.order"
+        auto="False"
+        name="test"
+        rml="jrxml_reports/custom_reports/test.jrxml"
+        id="report_test_sqp" 
+        menu="True"
+        header="False"
+        groups="base.group_sale_salesman" 
+    />       
+    <record id="report_test_sqp" model="ir.actions.report.xml">
+        <field name="jasper_report">True</field>
+        <field name="jasper_output">pdf</field>
+    </record>
 
     <report string="Quote / Sale Order (No Disc Col)"
         model="sale.order"

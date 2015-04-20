@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Payment Voucher" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.5000000000000129"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="221"/>
 	<property name="ireport.y" value="96"/>
 	<property name="OPENERP_RELATIONS" value="[&quot;line_ids&quot;]"/>
 	<style name="table" lineSpacing="Single">
@@ -235,14 +235,14 @@ $F{counterpart_acct} :
 Payment Voucher]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="292" y="68" width="159" height="15"/>
+				<reportElement x="277" y="68" width="159" height="15"/>
 				<textElement textAlignment="Right" lineSpacing="Single">
 					<font fontName="Monospaced" size="12" isBold="false" pdfFontName="Garuda-Bold.ttf" pdfEncoding="Identity-H" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[เลขที / Voucher No. :]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="457" y="68" width="97" height="15"/>
+				<reportElement x="442" y="68" width="118" height="15"/>
 				<textElement lineSpacing="Single">
 					<font fontName="Monospaced" size="12" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
