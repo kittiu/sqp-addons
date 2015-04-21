@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sqp_report_production_status" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.239669421487604"/>
-	<property name="ireport.x" value="352"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="table" lineSpacing="Single">
 		<box topPadding="2" leftPadding="1" bottomPadding="1" rightPadding="1">
@@ -35,7 +35,7 @@
 	</parameter>
 	<parameter name="partner_id" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[select *, quantity - delivered_qty balance
+		<![CDATA[select now() + interval '7 hours' as today, *, quantity - delivered_qty balance
 from (select *,
 	(quantity - inject) inject_bal,
 	inject / quantity * 100 inject_percent,
@@ -121,6 +121,7 @@ order by order_type, cust, mo_date]]>
 	<field name="delivered_qty" class="java.lang.Number"/>
 	<field name="balance" class="java.lang.Number"/>
 	<field name="short_note" class="java.lang.String"/>
+	<field name="today" class="java.sql.Timestamp"/>
 	<variable name="door" class="java.lang.Number" calculation="Sum">
 		<variableExpression><![CDATA[$F{door}]]></variableExpression>
 	</variable>
@@ -147,6 +148,15 @@ order by order_type, cust, mo_date]]>
 0.0 :
 $V{inject} / $V{quantity} * 100]]></variableExpression>
 	</variable>
+	<variable name="balance" class="java.lang.Number" calculation="Sum">
+		<variableExpression><![CDATA[$F{balance}]]></variableExpression>
+	</variable>
+	<variable name="delivered_qty" class="java.lang.Number" calculation="Sum">
+		<variableExpression><![CDATA[$F{delivered_qty}]]></variableExpression>
+	</variable>
+	<variable name="today" class="java.util.Date">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
 	<group name="UniqueID">
 		<groupExpression><![CDATA[$F{cust}]]></groupExpression>
 		<groupFooter>
@@ -163,63 +173,63 @@ $V{inject} / $V{quantity} * 100]]></variableExpression>
 					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$F{inject_bal}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{inject_bal}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="721" y="0" width="28" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$F{delivered_qty}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{delivered_qty}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="665" y="0" width="28" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$F{door}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{door}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="693" y="0" width="28" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$F{door_bal}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{door_bal}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="749" y="0" width="28" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$F{balance}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{balance}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="523" y="0" width="30" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$F{quantity}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{quantity}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="609" y="0" width="28" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$F{inject}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{inject}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="581" y="0" width="28" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$F{steel_bal}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{steel_bal}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="553" y="0" width="28" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$F{steel}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{steel}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="777" y="0" width="45" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
@@ -488,63 +498,63 @@ $V{inject} / $V{quantity} * 100]]></variableExpression>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{thick}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="523" y="0" width="30" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="523" y="0" width="30" height="15" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Number"><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="609" y="0" width="28" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="609" y="0" width="28" height="15"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Number"><![CDATA[$F{inject}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="665" y="0" width="28" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="665" y="0" width="28" height="15" backcolor="#E5E5E5"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Number"><![CDATA[$F{door}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="553" y="0" width="28" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="553" y="0" width="28" height="15" backcolor="#E5E5E5"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Number"><![CDATA[$F{steel}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="581" y="0" width="28" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="581" y="0" width="28" height="15" backcolor="#E5E5E5"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Number"><![CDATA[$F{steel_bal}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="693" y="0" width="28" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="693" y="0" width="28" height="15" backcolor="#E5E5E5"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Number"><![CDATA[$F{door_bal}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="637" y="0" width="28" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="637" y="0" width="28" height="15"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Number"><![CDATA[$F{inject_bal}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="721" y="0" width="28" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="721" y="0" width="28" height="15"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Number"><![CDATA[$F{delivered_qty}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="749" y="0" width="28" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="749" y="0" width="28" height="15"/>
 				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
@@ -558,7 +568,7 @@ $V{inject} / $V{quantity} * 100]]></variableExpression>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{short_note}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Transparent" x="777" y="0" width="45" height="15"/>
+				<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="777" y="0" width="45" height="15"/>
 				<textElement verticalAlignment="Top" lineSpacing="Single">
 					<font fontName="Monospaced" size="8" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
@@ -581,6 +591,20 @@ $V{inject} / $V{quantity} * 100]]></variableExpression>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="78" y="1" width="177" height="15"/>
+				<textElement>
+					<font isUnderline="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{today}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="1" width="122" height="15"/>
+				<textElement verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="Monospaced" size="10" isBold="false" isUnderline="false" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Printed Date:]]></text>
+			</staticText>
 		</band>
 	</pageFooter>
 </jasperReport>
