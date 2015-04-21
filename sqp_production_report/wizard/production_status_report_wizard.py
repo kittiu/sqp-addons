@@ -25,11 +25,6 @@ class sqp_report_production_status(osv.osv_memory):
 
     _name = 'sqp.report.production.status'
 
-    def _get_pawn_shop_id(self, cr, uid, context=None):
-        shop_obj = self.pool.get('pawn.shop')
-        shop_ids = shop_obj.search(cr, uid, [])
-        return shop_ids and shop_ids[0] or False
-
     _columns = {
         'partner_id': fields.many2one('res.partner', 'Customer', required=False),
         'format': fields.selection([('pdf', 'PDF'),

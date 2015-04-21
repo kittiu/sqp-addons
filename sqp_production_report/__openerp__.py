@@ -36,6 +36,7 @@
     'data': [
         'custom_reports.xml',
         'wizard/production_status_report_wizard.xml',
+        'wizard/production_daily_report_wizard.xml',
     ],
     'test': [
     ],

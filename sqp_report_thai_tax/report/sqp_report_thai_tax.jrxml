@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_thai_tax_output" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.8181818181818188"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="22"/>
 	<style name="table" lineSpacing="Single">
 		<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="2">
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -320,15 +320,6 @@ order by date_invoice, doc_number, supplier_doc_number]]>
 			<line>
 				<reportElement x="489" y="97" width="65" height="1"/>
 			</line>
-			<staticText>
-				<reportElement x="0" y="0" width="555" height="20">
-					<printWhenExpression><![CDATA[$P{type_tax_use} == "purchase" ? true : false]]></printWhenExpression>
-				</reportElement>
-				<textElement textAlignment="Center" lineSpacing="Single" markup="none">
-					<font fontName="Monospaced" size="14" isBold="false" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H" isPdfEmbedded="false"/>
-				</textElement>
-				<text><![CDATA[รายงานภาษีซื้อ]]></text>
-			</staticText>
 		</band>
 	</title>
 	<pageHeader>

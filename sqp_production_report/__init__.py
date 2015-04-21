@@ -21,5 +21,6 @@
 
 import wizard
 import sqp_report_production_status_parser
+import sqp_report_production_daily_parser
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
