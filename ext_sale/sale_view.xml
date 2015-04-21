@@ -55,6 +55,15 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <data>
+                	<button name="cancel" position="attributes" >
+						<attribute name="confirm">Are you sure you want to cancel?</attribute>
+					</button>
+					<button name="action_cancel" position="attributes" >
+						<attribute name="confirm">Are you sure you want to cancel?</attribute>
+					</button>
+					<button name="invoice_cancel" position="attributes" >
+						<attribute name="confirm">Are you sure you want to cancel?</attribute>
+					</button>										
                     <field name="name" position="after">
                         <div class="oe_right">
 	                        <field name="is_international" attrs="{'readonly':[('name','!=','/')]}"/>
