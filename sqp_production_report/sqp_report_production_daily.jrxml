@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sqp_report_production_status" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.239669421487604"/>
-	<property name="ireport.x" value="324"/>
+	<property name="ireport.x" value="396"/>
 	<property name="ireport.y" value="0"/>
 	<style name="table" lineSpacing="Single">
 		<box topPadding="2" leftPadding="1" bottomPadding="1" rightPadding="1">
@@ -117,7 +117,7 @@ where a.dept = $P{dept}]]>
 	<variable name="sqm" class="java.lang.Number">
 		<variableExpression><![CDATA[($F{W} == null ? 0.0 : $F{W}) *
 ($F{L} == null ? 0.0 : $F{L}) *
-($F{T} == null ? 0.0 : Integer.parseInt($F{T})) / 1000000]]></variableExpression>
+($V{normal_qty} + $V{ot_qty}) / 1000000]]></variableExpression>
 	</variable>
 	<variable name="total_normal_qty" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$V{normal_qty}]]></variableExpression>

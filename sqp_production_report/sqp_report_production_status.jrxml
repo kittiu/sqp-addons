@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sqp_report_production_status" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.239669421487604"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="216"/>
 	<property name="ireport.y" value="0"/>
 	<style name="table" lineSpacing="Single">
 		<box topPadding="2" leftPadding="1" bottomPadding="1" rightPadding="1">
@@ -122,39 +122,39 @@ order by order_type, cust, mo_date]]>
 	<field name="balance" class="java.lang.Number"/>
 	<field name="short_note" class="java.lang.String"/>
 	<field name="today" class="java.sql.Timestamp"/>
-	<variable name="door" class="java.lang.Number" calculation="Sum">
+	<variable name="door" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{door}]]></variableExpression>
 	</variable>
-	<variable name="steel" class="java.lang.Number" calculation="Sum">
+	<variable name="steel" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{steel}]]></variableExpression>
 	</variable>
-	<variable name="inject" class="java.lang.Number" calculation="Sum">
+	<variable name="inject" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{inject}]]></variableExpression>
 	</variable>
-	<variable name="door_bal" class="java.lang.Number" calculation="Sum">
+	<variable name="door_bal" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{door_bal}]]></variableExpression>
 	</variable>
-	<variable name="steel_bal" class="java.lang.Number" calculation="Sum">
+	<variable name="steel_bal" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{steel_bal}]]></variableExpression>
 	</variable>
-	<variable name="inject_bal" class="java.lang.Number" calculation="Sum">
+	<variable name="inject_bal" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{inject_bal}]]></variableExpression>
 	</variable>
-	<variable name="quantity" class="java.lang.Number" calculation="Sum">
+	<variable name="quantity" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{quantity}]]></variableExpression>
 	</variable>
-	<variable name="inject_percent" class="java.lang.Number" calculation="Sum">
+	<variable name="inject_percent" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$V{quantity} == null || $V{quantity} == 0 ?
 0.0 :
 $V{inject} / $V{quantity} * 100]]></variableExpression>
 	</variable>
-	<variable name="balance" class="java.lang.Number" calculation="Sum">
+	<variable name="balance" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{balance}]]></variableExpression>
 	</variable>
-	<variable name="delivered_qty" class="java.lang.Number" calculation="Sum">
+	<variable name="delivered_qty" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{delivered_qty}]]></variableExpression>
 	</variable>
-	<variable name="today" class="java.util.Date">
+	<variable name="today" class="java.util.Date" resetType="Group" resetGroup="UniqueID">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
 	<group name="UniqueID">
