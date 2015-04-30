@@ -97,7 +97,7 @@ class sqp_job_cost_sheet(osv.osv):
 
             cr.execute("""select sum(price_subtotal) from sqp_job_cost_sheet_invoice_list a 
                             join product_product b on b.id = a.product_id
-                            where a.order_id = %s and b.job_cost_type = %s""", (order.id, None))
+                            where a.order_id = %s and b.job_cost_type is %s""", (order.id, None))
             res[order.id]['other_invoice_list_amount'] = cr.fetchone()[0] or 0.0    
             
             # Commisison Amount
@@ -577,8 +577,8 @@ class sqp_job_cost_sheet_po_subcontract(osv.osv):
                 ail.uos_id product_uom, ail.price_unit,
                 case when ai.type = 'in_invoice' then price_subtotal else -price_subtotal end as price_subtotal
             from account_invoice ai
-            join (select min(purchase_id) purchase_id, min(invoice_id) invoice_id from purchase_invoice_rel
-            group by purchase_id) pil on pil.invoice_id = ai.id
+            join (select purchase_id purchase_id, invoice_id from purchase_invoice_rel) pil 
+            on pil.invoice_id = ai.id
             join purchase_order po on po.id = pil.purchase_id and po.is_subcontract = True and po.ref_order_id is not null
             join account_invoice_line ail on ail.invoice_id = ai.id
             where ai.state not in ('draft', 'cancel') and ai.type in ('in_invoice', 'in_refund')) sub
@@ -640,8 +640,8 @@ class sqp_job_cost_sheet_inovice_list(osv.osv):
             join     (select invoice_id, order_id from (
                 -- Invoice with Reference to PO (non-Subcontract)
                 (select pil.invoice_id, po.ref_order_id as order_id from purchase_order po
-                join (select min(purchase_id) purchase_id, min(invoice_id) invoice_id from purchase_invoice_rel
-                    group by purchase_id) pil on po.id = pil.purchase_id
+                join (select purchase_id, invoice_id from purchase_invoice_rel) pil 
+                        on po.id = pil.purchase_id
                 where po.is_subcontract = False and po.ref_order_id is not null)
                 union -- Invoice with direct reference to PO
                 (select ai.id as invoice_id, ai.cost_order_id as order_id from account_invoice ai
