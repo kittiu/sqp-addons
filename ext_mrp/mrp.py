@@ -275,6 +275,7 @@ class mrp_production(osv.osv):
     
     def create(self, cr, uid, vals, context=None):
         res = super(mrp_production, self).create(cr, uid, vals, context=context)
+        # Default hard coded location for SQP
         location_model, location_factoryfg_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'sqp_config_2', 'stock_location_factory_fg')
         location_model, location_prod_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'stock', 'location_production')
         prod_obj = self.pool.get('mrp.production')
@@ -282,6 +283,10 @@ class mrp_production(osv.osv):
         if not production.parent_id: # Super MO
             prod_obj.write(cr, uid, [res], {'location_src_id': location_prod_id, 'location_dest_id': location_prod_id}, context=context)
         else: # Sub-MO
+            order_id = vals.get('order_id', False)
+            if order_id:
+                order = self.pool.get('sale.order').browse(cr, uid, order_id)
+                location_factoryfg_id = order.shop_id.warehouse_id and order.shop_id.warehouse_id.lot_stock_id.id or location_factoryfg_id
             prod_obj.write(cr, uid, [res], {'location_src_id': location_prod_id, 'location_dest_id': location_factoryfg_id}, context=context)
         return res  
     
