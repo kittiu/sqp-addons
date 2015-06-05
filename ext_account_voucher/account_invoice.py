@@ -34,5 +34,14 @@ class account_invoice(osv.osv):
                 "of accounting entries. The payment term may compute several due dates, for example 50% now and 50% in one month, but if you want to force a due date, make sure that the payment term is not set on the invoice. If you keep the payment term and the due date empty, it means direct payment."),
     }
 
+    # go from canceled state to draft state, should also set state from 2binvoiced to invoiced
+    def action_cancel_draft(self, cr, uid, ids, *args):
+        res = super(account_invoice, self).action_cancel_draft(cr, uid, ids, *args)
+        for invoice in self.browse(cr, uid, ids):
+            for picking in invoice.picking_ids:
+                if picking.invoice_state == '2binvoiced':
+                    self.pool.get('stock.picking').write(cr, uid, picking.id, {'invoice_state': 'invoiced'})
+        return res
+    
 account_invoice()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
