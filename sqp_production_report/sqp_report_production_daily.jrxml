@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sqp_report_production_status" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.239669421487604"/>
-	<property name="ireport.x" value="441"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="table" lineSpacing="Single">
 		<box topPadding="2" leftPadding="1" bottomPadding="1" rightPadding="1">
@@ -48,16 +48,16 @@
 		when dept='S4' then 'DO'
 		when dept='S5' then 'FN'
 	end as dept,
-  so.name so, so.ref_project_name project, pp.name_template as product, pp."W", pp."L", thick.value as "T",
+  so.name so, so.ref_project_name project, history.line_number, pp.name_template as product, pp."W", pp."L", thick.value as "T",
 (select code from bom_choice_skin where id = pp.mat_inside_skin_choices) inside,
 (select code from bom_choice_skin where id = pp.mat_outside_skin_choices) outside,
 date, order_qty, normal_qty, ot_qty from
 -- Change History
-(select normal.dept, normal.mo_id, normal.product_id, normal.date, coalesce(normal.order_qty, ot.order_qty) as order_qty, normal_qty, ot_qty from
+(select normal.dept, normal.mo_id, normal.line_number, normal.product_id, normal.date, coalesce(normal.order_qty, ot.order_qty) as order_qty, normal_qty, ot_qty from
 (
-    select dept, mo_id, product_id, date, order_qty, max(new_value) - min(old_value) as normal_qty
+    select dept, mo_id, line_number, product_id, date, order_qty, max(new_value) - min(old_value) as normal_qty
     from
-    (select atl.field_description dept, status.production_id mo_id, status.product_id, status.product_qty as order_qty, date_trunc('day', at.create_date) date,
+    (select atl.field_description dept, status.production_id mo_id, status.line_number, status.product_id, status.product_qty as order_qty, date_trunc('day', at.create_date) date,
     coalesce(new_value_text, '0')::float new_value, coalesce(old_value_text, '0')::float old_value
     from mrp_production_status status
     left outer join audittrail_log at on status.id = at.res_id
@@ -66,13 +66,13 @@ date, order_qty, normal_qty, ot_qty from
     and atl.field_description in ('S1', 'S2', 'S3', 'S4', 'S5')
     and at.create_date - interval '7 hour' >= $P{date} and at.create_date - interval '17 hour' <= $P{date}
     ) normal
-    group by dept, mo_id, product_id, date, order_qty
+    group by dept, mo_id, line_number, product_id, date, order_qty
 ) normal
 full outer join
 (
-    select dept, mo_id, product_id, date, order_qty, max(new_value) - min(old_value) as ot_qty
+    select dept, mo_id, line_number, product_id, date, order_qty, max(new_value) - min(old_value) as ot_qty
     from
-    (select atl.field_description dept, status.production_id mo_id, status.product_id, status.product_qty as order_qty, date_trunc('day', at.create_date) date,
+    (select atl.field_description dept, status.production_id mo_id, status.line_number, status.product_id, status.product_qty as order_qty, date_trunc('day', at.create_date) date,
     coalesce(new_value_text, '0')::float new_value, coalesce(old_value_text, '0')::float old_value
     from mrp_production_status status
     left outer join audittrail_log at on status.id = at.res_id
@@ -81,7 +81,7 @@ full outer join
     and atl.field_description in ('S1', 'S2', 'S3', 'S4', 'S5')
     and at.create_date - interval '17 hour' > $P{date}  and at.create_date - interval '24 hour' <= $P{date}
     ) ot
-    group by dept, mo_id, product_id, date, order_qty
+    group by dept, mo_id, line_number, product_id, date, order_qty
 ) ot
 on normal.dept = ot.dept and normal.mo_id = ot.mo_id and normal.product_id = ot.product_id and normal.date = ot.date) history
 -- join for more information on MO
@@ -89,7 +89,7 @@ join mrp_production mo on mo.id = history.mo_id
 join product_product pp on pp.id = history.product_id
 left outer join bom_choice_thick thick on thick.id = pp."T"
 join sale_order so on so.id = mo.order_id
-order by dept, date, so.name) a
+order by dept, date, so.name, history.line_number) a
 where a.dept = $P{dept}]]>
 	</queryString>
 	<field name="date" class="java.util.Date"/>
@@ -105,6 +105,7 @@ where a.dept = $P{dept}]]>
 	<field name="normal_qty" class="java.lang.Number"/>
 	<field name="ot_qty" class="java.lang.Number"/>
 	<field name="today" class="java.sql.Timestamp"/>
+	<field name="line_number" class="java.lang.String"/>
 	<variable name="dept" class="java.lang.String">
 		<variableExpression><![CDATA[$F{dept}]]></variableExpression>
 	</variable>
@@ -151,6 +152,9 @@ where a.dept = $P{dept}]]>
 	</variable>
 	<variable name="total_order_qty_1" class="java.lang.Number" calculation="Sum">
 		<variableExpression><![CDATA[$F{order_qty}]]></variableExpression>
+	</variable>
+	<variable name="line_number" class="java.lang.String">
+		<variableExpression><![CDATA[$F{line_number}]]></variableExpression>
 	</variable>
 	<group name="Total">
 		<groupExpression><![CDATA[$F{dept}]]></groupExpression>
@@ -201,7 +205,7 @@ where a.dept = $P{dept}]]>
 		</groupFooter>
 	</group>
 	<group name="UniqueID">
-		<groupExpression><![CDATA[$F{so}+$F{dept}]]></groupExpression>
+		<groupExpression><![CDATA[$F{so}+$F{dept}+$F{line_number}]]></groupExpression>
 		<groupHeader>
 			<band height="19">
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
@@ -209,16 +213,24 @@ where a.dept = $P{dept}]]>
 					<textElement verticalAlignment="Top" lineSpacing="Single">
 						<font fontName="Monospaced" size="12" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{dept} == "SF" ? "Sheet Forming" : (
+					<textFieldExpression class="java.lang.String"><![CDATA[($F{dept} == "SF" ? "Sheet Forming" : (
     $F{dept} == "AS" ? "Assembly" : (
         $F{dept} == "IJ" ? "Injection" : (
             $F{dept} == "DO" ? "Door" : (
-                $F{dept} == "FN" ? "Finishing" : ""))))]]></textFieldExpression>
+                $F{dept} == "FN" ? "Finishing" : "")))))
++ " / " +
+($F{line_number}.toString() == "" ? "" : (
+  $F{line_number} == "L1" ? "Line 1" : (
+    $F{line_number} == "L2" ? "Line 2" : (
+        $F{line_number} == "L3" ? "Line 3" : (
+            $F{line_number} == "L4" ? "Line 4" : (
+                $F{line_number} == "L5" ? "Line 5" : ""))))))
+        ]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="20">
+			<band height="36">
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="1" y="0" width="560" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement verticalAlignment="Middle" lineSpacing="Single">
