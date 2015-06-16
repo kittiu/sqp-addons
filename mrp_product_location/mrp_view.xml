@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+	    <record id="mrp_production_form_view_ext" model="ir.ui.view">
+	        <field name="name">mrp.production.form.view.ext</field>
+	        <field name="model">mrp.production</field>
+	        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+	        <field name="arch" type="xml">
+	            <xpath expr="/form/sheet/notebook/page[last()]" position="after">            		
+	            	<page string="Stock Location" attrs="{'invisible': ['|', ('state','in',('draft','done','cancel')), ('parent_id','!=',False)]}">
+            			<field name="mrp_product_location_ids" readonly="1" >
+            				<tree>
+            					<field name="product_id" />
+            					<field name="location_id"/>
+                            	<field name="qty_available" sum='Total Quantity' />
+                            </tree>
+            			</field>
+            		</page>
+				</xpath>
+	        </field>
+	    </record>
+    </data>
+</openerp>
