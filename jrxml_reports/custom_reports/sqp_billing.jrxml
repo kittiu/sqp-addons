@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Billing" language="groovy" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="1.3310000000000006"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="114"/>
+	<property name="ireport.y" value="304"/>
 	<property name="OPENERP_RELATIONS" value="[&apos;line_ids&apos;]"/>
 	<style name="table" lineSpacing="Single">
 		<box>
@@ -108,33 +108,13 @@
 	<field name="currency" class="java.lang.String">
 		<fieldDescription><![CDATA[currency_id/name]]></fieldDescription>
 	</field>
-	<variable name="Total_Amount" class="java.lang.Number" resetType="Group" resetGroup="Allocations" calculation="Sum">
+	<variable name="Total_Amount" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
 		<variableExpression><![CDATA[$F{Amount-amount}]]></variableExpression>
 	</variable>
-	<group name="Allocations" isStartNewPage="true" footerPosition="CollateAtBottom">
-		<groupExpression><![CDATA[$F{id}]]></groupExpression>
-		<groupFooter>
-			<band height="105"/>
-		</groupFooter>
-	</group>
 	<group name="UniqueID" footerPosition="StackAtBottom">
 		<groupFooter>
-			<band height="24">
+			<band>
 				<printWhenExpression><![CDATA[true]]></printWhenExpression>
-				<textField pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToTallestObject" x="481" y="0" width="85" height="24"/>
-					<textElement textAlignment="Right" verticalAlignment="Top">
-						<font fontName="SansSerif" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
-					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$V{Total_Amount}]]></textFieldExpression>
-				</textField>
-				<textField isBlankWhenNull="true">
-					<reportElement x="63" y="0" width="405" height="24"/>
-					<textElement textAlignment="Center">
-						<font fontName="SansSerif" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
-					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["("+(new Scriptlet()).getAmtInWords((new BigDecimal($V{Total_Amount}.round(2).toString())).setScale(2).toString(),"THB")+")"]]></textFieldExpression>
-				</textField>
 			</band>
 		</groupFooter>
 	</group>
@@ -278,16 +258,16 @@
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="30">
+		<band height="170">
 			<textField evaluationTime="Report">
-				<reportElement x="553" y="0" width="40" height="20"/>
+				<reportElement x="548" y="150" width="40" height="20"/>
 				<textElement>
 					<font size="10" isBold="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER} + ")"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="473" y="0" width="80" height="20"/>
+				<reportElement x="468" y="150" width="80" height="20"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
@@ -295,4 +275,36 @@
 			</textField>
 		</band>
 	</pageFooter>
+	<lastPageFooter>
+		<band height="170">
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="481" y="19" width="85" height="24"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Number"><![CDATA[$V{Total_Amount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="63" y="19" width="405" height="24"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["("+(new Scriptlet()).getAmtInWords((new BigDecimal($V{Total_Amount}.round(2).toString())).setScale(2).toString(),"THB")+")"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="548" y="150" width="40" height="20"/>
+				<textElement>
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER} + ")"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="468" y="150" width="80" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["(Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
 </jasperReport>
