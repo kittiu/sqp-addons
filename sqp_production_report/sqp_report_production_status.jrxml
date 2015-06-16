@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sqp_report_production_status" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.239669421487604"/>
-	<property name="ireport.x" value="216"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="table" lineSpacing="Single">
 		<box topPadding="2" leftPadding="1" bottomPadding="1" rightPadding="1">
@@ -77,17 +77,23 @@ from (select *,
 					from mrp_production prd
 					join mrp_production_status status on status.production_id = prd.id
 					where prd.parent_id is null
-	  				and $P{partner_id} in (prd.partner_id, -1)
+	  				and $P{partner_id} in (prd.partner_id, -1) -- for B.Grim test, and 1407 in (prd.partner_id, -1)
 					and prd.order_id is not null
 					group by prd.order_id, prd.id, prd.name) a
+					-- Only MO that DO's qty delivered not equal to that in MO
 					where a.qty >  (select coalesce(sum(product_qty),0) from stock_picking p
 							join stock_move m on m.picking_id = p.id
-							where p.ref_order_id = a.order_id and position(a.mo_name in p.origin) > 0 and m.state = 'done'))
+							where p.ref_order_id = a.order_id and position(a.mo_name in p.origin) > 0 and m.state = 'done')
+					-- Only MO that DO's qty with some unsent / uncancelled > 0
+					and (select coalesce(sum(product_qty),0) from stock_picking p
+							join stock_move m on m.picking_id = p.id
+							where p.ref_order_id = a.order_id and position(a.mo_name in p.origin) > 0
+							and p.state in ('draft', 'progress', 'auto', 'confirmed')) > 0)
 		) a
 	group by mo_id, short_note, order_id, picking_id, order_type, mo_date, do_date, mo, so, cust, project, thick
 	) b
 ) c
-order by order_type, cust, mo_date]]>
+order by cust, order_type, mo_date]]>
 	</queryString>
 	<field name="order_type" class="java.lang.String">
 		<fieldDescription><![CDATA[order_type]]></fieldDescription>

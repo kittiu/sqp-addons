@@ -33,7 +33,7 @@ class sqp_report_production_daily(osv.osv_memory):
                                     ('AS', 'Assembly'),
                                     ('IJ', 'Injection'),
                                     ('DO', 'Door'),
-                                    ('FN', 'Finishing')], 'Format', required=True),
+                                    ('FN', 'Finishing')], 'Department', required=True),
         'format': fields.selection([('pdf', 'PDF'),
                                     ('xls', 'Excel')], 'Format', required=True)
     }
