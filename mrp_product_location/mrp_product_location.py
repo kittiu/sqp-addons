@@ -102,15 +102,16 @@ class mrp_product_location(osv.osv):
                   AND l.chained_location_type = 'none'
                   ) a
                 JOIN 
-                (select parent.id production_id, child.product_id
-                from mrp_production parent 
-                join mrp_production child on parent.parent_id is null and child.parent_id is not null
-                            and child.parent_id = parent.id
-                            and parent.state not in ('draft','done','cancel')
-                order by parent.id, child.product_id) b
+                (select mrp.id production_id, bom.product_id
+                from mrp_production mrp 
+                join mrp_bom bom
+            on mrp.bom_id is not null and mrp.parent_id is null
+            and bom.bom_id = mrp.bom_id
+                       and mrp.state in ('draft')
+                order by mrp.id, bom.product_id) b
                         ON a.product_id = b.product_id) AS mrp_product_location
                         ORDER BY location_id, production_id, product_id DESC
-                    ;""" % (str(location_id), str(location_id)))
+            ;""" % (str(location_id), str(location_id)))
 
 mrp_product_location()
 
