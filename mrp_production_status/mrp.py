@@ -68,6 +68,12 @@ class mrp_production(osv.osv):
                 'mrp.production.status': (_get_mrp_proudction, ['s1', 's2', 's3', 's4', 's5', 'num_stations'], 10),
             }),      
         'num_stations': fields.selection([(1,'1'), (2,'2'), (3,'3'), (4,'4'), (5,'5')], '# Stations', required=True, readonly=False, states={'done':[('readonly',True)]}),
+        'line_number': fields.selection([('L1','Line 1'),
+                                         ('L2','Line 2'),
+                                         ('L3','Line 3'),
+                                         ('L4','Line 4'),
+                                         ('L5','Line 5')
+                                         ], 'Line #')
     }
     _defaults = {
         'num_stations': 5
@@ -103,6 +109,26 @@ class mrp_production(osv.osv):
                 'tag': 'reload'
                 }           
     
+    # If select line, cascade to all childs
+    def write(self, cr, uid, ids, vals, context=None):
+        res = super(mrp_production, self).write(cr, uid, ids, vals, context=context)
+        if vals.get('line_number', False):
+            mo = self.browse(cr, uid, ids[0])
+            if not mo.parent_id and mo.child_ids:  # For a parent,
+                # update child mo
+                child_ids = [x.id for x in mo.child_ids]
+                self.write(cr, uid, child_ids, {'line_number': vals.get('line_number')}, context=context)
+                # update statue tracking line
+                status_line_ids = [x.id for x in mo.status_lines]
+                self.pool.get('mrp.production.status').write(cr, uid, status_line_ids, {'line_number': vals.get('line_number')}, context=context)
+            if mo.parent_id: # For child, 
+                # update its related status tracking
+                status_line_ids = self.pool.get('mrp.production.status').search(cr, uid, [('production_id','=',mo.parent_id.id),
+                                                                                         ('product_id', '=', mo.product_id.id)])
+                if status_line_ids:
+                    cr.execute('update mrp_production_status set line_number=%s where id IN %s', (vals.get('line_number'), tuple(status_line_ids)))
+        return res
+    
 mrp_production()
 
 class mrp_production_status(osv.osv):
@@ -124,6 +150,12 @@ class mrp_production_status(osv.osv):
         'sequence': fields.function(_get_product_sequence, string='Sequence', type='integer', store=True),
         'production_id': fields.many2one('mrp.production', 'Manufacturing Order', required=True, ondelete='cascade', select=True),
         'product_id': fields.many2one('product.product', 'Product', readonly=True),
+        'line_number': fields.selection([('L1','Line 1'),
+                                         ('L2','Line 2'),
+                                         ('L3','Line 3'),
+                                         ('L4','Line 4'),
+                                         ('L5','Line 5')
+                                         ], 'Line #'),        
         'product_qty': fields.float('Quantity', readonly=True),
         'product_uom': fields.many2one('product.uom', 'Unit of Measure ', readonly=True),
         's1': fields.float('S1'),
@@ -173,6 +205,11 @@ class mrp_production_status(osv.osv):
                 mp_status.s5 > mp_status.product_qty:
                 raise osv.except_osv(_('Can not save change!'),
                                  _('Some subsequence value in Status Tracking still greater than product quantity'))
+            # Change line number, should cascade to its MO
+            if vals.get('line_number', False):
+                mo_ids = self.pool.get('mrp.production').search(cr, uid, [('parent_id', '=', mp_status.production_id.id),
+                                                                 ('product_id', '=', mp_status.product_id.id)])
+                cr.execute('update mrp_production set line_number=%s where id IN %s', (vals.get('line_number'), tuple(mo_ids)))
         return res
         
 mrp_production_status()
