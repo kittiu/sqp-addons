@@ -32,6 +32,7 @@ Providing visibility of raw material stock card of an Manufacturing Order (paren
     'website': 'http://www.ecosoft.co.th',
     'depends': ['mrp'],
     'data': [
+             'security/ir.model.access.csv',
              'mrp_view.xml',
     ],
     'active': False,

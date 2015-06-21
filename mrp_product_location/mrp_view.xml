@@ -17,6 +17,14 @@
             			</field>
             		</page>
 				</xpath>
+	            <xpath expr="/form/sheet/notebook" position="before">
+	            	<field name="total_qty_returned" invisible="1"/>
+					<div style="color:red" attrs="{'invisible': [('total_qty_returned','=',0)]}">
+						<h2>				
+							<label string="Some Standard Product is returned. Please check 'Existing Stock' tab before proceeding."/>		
+						</h2>			
+					</div>		  
+	            </xpath>            		
 	        </field>
 	    </record>
     </data>

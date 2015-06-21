@@ -35,6 +35,26 @@ from openerp.tools.sql import drop_view_if_exists
 import openerp.addons.decimal_precision as dp
 
 
+class mrp_production(osv.osv):
+    
+    _inherit = "mrp.production"
+    
+    def _total_qty_returned(self, cursor, user, ids, name, arg, context=None):
+        res = {}
+        tot = 0.0
+        for production in self.browse(cursor, user, ids, context=context):
+            for line in production.mrp_product_location_ids:
+                tot += line.qty_available
+                res[production.id] = tot
+        return res
+    
+    _columns = {
+        'mrp_product_location_ids': fields.one2many('mrp.product.location', 'production_id', 'Product by Stock'),
+        'total_qty_returned': fields.function(_total_qty_returned, string='Quantity FG (returned)', type='float')
+    }
+    
+mrp_production()
+
 class mrp_product_location(osv.osv):
     _name = "mrp.product.location"
     _description = "Available Stock By Location"
@@ -87,6 +107,7 @@ class mrp_product_location(osv.osv):
                   AND l.active = True
                   AND l.location_id <> %s
                   AND l.chained_location_type = 'none'
+                  and l.posx = -1
                 UNION
                 SELECT
                     l.id AS location_id ,product_id,
@@ -100,6 +121,7 @@ class mrp_product_location(osv.osv):
                   AND l.active = True
                   AND l.location_id <> %s
                   AND l.chained_location_type = 'none'
+                  and l.posx = -1
                   ) a
                 JOIN 
                 (select mrp.id production_id, bom.product_id
@@ -114,13 +136,3 @@ class mrp_product_location(osv.osv):
             ;""" % (str(location_id), str(location_id)))
 
 mrp_product_location()
-
-
-class mrp_production(osv.osv):
-    _inherit = "mrp.production"
-
-    _columns = {
-        'mrp_product_location_ids': fields.one2many('mrp.product.location', 'production_id', 'Product by Stock', ),
-    }
-
-mrp_production()
