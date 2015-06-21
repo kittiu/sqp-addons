@@ -40,12 +40,13 @@ class mrp_production(osv.osv):
     _inherit = "mrp.production"
     
     def _total_qty_returned(self, cursor, user, ids, name, arg, context=None):
-        res = {}
+        res = dict.fromkeys(ids, False)
         tot = 0.0
         for production in self.browse(cursor, user, ids, context=context):
             for line in production.mrp_product_location_ids:
                 tot += line.qty_available
                 res[production.id] = tot
+        print res
         return res
     
     _columns = {
