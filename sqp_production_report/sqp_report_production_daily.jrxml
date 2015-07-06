@@ -57,7 +57,15 @@ date, order_qty, normal_qty, ot_qty from
 (
     select dept, mo_id, line_number, product_id, date, order_qty, max(new_value) - min(old_value) as normal_qty
     from
-    (select atl.field_description dept, status.production_id mo_id, status.line_number, status.product_id, status.product_qty as order_qty, date_trunc('day', at.create_date) date,
+    (select atl.field_description dept, status.production_id mo_id,
+	case
+		when atl.field_description='S1' then status.s1_line
+		when atl.field_description='S2' then status.s2_line
+		when atl.field_description='S3' then status.s3_line
+		when atl.field_description='S4' then status.s4_line
+		when atl.field_description='S5' then status.s5_line
+	end as line_number,
+    status.product_id, status.product_qty as order_qty, date_trunc('day', at.create_date) date,
     coalesce(new_value_text, '0')::float new_value, coalesce(old_value_text, '0')::float old_value
     from mrp_production_status status
     left outer join audittrail_log at on status.id = at.res_id
@@ -72,7 +80,15 @@ full outer join
 (
     select dept, mo_id, line_number, product_id, date, order_qty, max(new_value) - min(old_value) as ot_qty
     from
-    (select atl.field_description dept, status.production_id mo_id, status.line_number, status.product_id, status.product_qty as order_qty, date_trunc('day', at.create_date) date,
+    (select atl.field_description dept, status.production_id mo_id,
+	case
+		when atl.field_description='S1' then status.s1_line
+		when atl.field_description='S2' then status.s2_line
+		when atl.field_description='S3' then status.s3_line
+		when atl.field_description='S4' then status.s4_line
+		when atl.field_description='S5' then status.s5_line
+	end as line_number,
+	status.product_id, status.product_qty as order_qty, date_trunc('day', at.create_date) date,
     coalesce(new_value_text, '0')::float new_value, coalesce(old_value_text, '0')::float old_value
     from mrp_production_status status
     left outer join audittrail_log at on status.id = at.res_id
@@ -224,8 +240,7 @@ where a.dept = $P{dept}]]>
     $F{line_number} == "L2" ? "Line 2" : (
         $F{line_number} == "L3" ? "Line 3" : (
             $F{line_number} == "L4" ? "Line 4" : (
-                $F{line_number} == "L5" ? "Line 5" : ""))))))
-        ]]></textFieldExpression>
+                $F{line_number} == "L5" ? "Line 5" : ""))))))]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
