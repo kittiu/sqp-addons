@@ -46,7 +46,6 @@ class mrp_production(osv.osv):
             for line in production.mrp_product_location_ids:
                 tot += line.qty_available
                 res[production.id] = tot
-        print res
         return res
     
     _columns = {

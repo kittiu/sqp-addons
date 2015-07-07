@@ -6,13 +6,15 @@
 	        <field name="model">mrp.production</field>
 	        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
 	        <field name="arch" type="xml">
-	            <xpath expr="/form/sheet/div/h1" position="inside">
+	            <xpath expr="/form/sheet/div/h1" position="after">
 	            	<div attrs="{'invisible': ['|', ('parent_id','!=',False), ('state','=','draft')]}">
-		            	<label string="SF" /> <field name="line_number_s1" class="oe_inline" />
-		            	<label string="AS" /> <field name="line_number_s2" class="oe_inline" />
-		            	<label string="IJ" /> <field name="line_number_s3" class="oe_inline" />
-		            	<label string="DO" /> <field name="line_number_s4" class="oe_inline" />
-		            	<label string="FN" /> <field name="line_number_s5" class="oe_inline" />
+	            		<h3>
+			            	<label string="SF" /> <field name="line_number_s1" class="oe_inline" />
+			            	<label string="AS" /> <field name="line_number_s2" class="oe_inline" />
+			            	<label string="IJ" /> <field name="line_number_s3" class="oe_inline" />
+			            	<label string="DO" /> <field name="line_number_s4" class="oe_inline" />
+			            	<label string="FN" /> <field name="line_number_s5" class="oe_inline" />
+						</h3>
 	           		</div>
 	            </xpath> 
 	            <xpath expr="/form/sheet/notebook/page[@string='Consumed Products']" position="before">
