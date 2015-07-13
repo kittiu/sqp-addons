@@ -57,6 +57,8 @@
                         <field name="date"/>                        
                     </group>
                     <group>
+                    	<field name="area_so" />
+                    	<field name="area_mo" />
                     </group>
                     <group string="Revenue">
 		                <field name="add_disc"/>

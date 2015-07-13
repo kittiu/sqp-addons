@@ -299,6 +299,26 @@ class sqp_job_cost_sheet(osv.osv):
         print QUERY
         return self._search_amount(cr, uid, obj, name, args, QUERY, context=context)
 
+    def _area_so(self, cursor, user, ids, name, arg, context=None):
+        res = {}
+        for sheet in self.browse(cursor, user, ids, context=context):
+            area = 0.0
+            for line in sheet.order_id.order_line:
+                if line.product_uom and line.product_uom.name.lower() == 'sqm':
+                    area += line.product_uom_qty
+            res[sheet.id] = area
+        return res
+    
+    def _area_mo(self, cursor, user, ids, name, arg, context=None):
+        res = {}
+        for sheet in self.browse(cursor, user, ids, context=context):
+            area = 0.0
+            for mo in sheet.order_id.ref_mo_ids:
+                for line in mo.product_lines:
+                    area += (line.L/1000 * line.W/1000) - line.cut_area
+            res[sheet.id] = area
+        return res
+
     _columns = {
         'name': fields.char('Name', readonly=True),
         'order_id': fields.many2one('sale.order', 'Sales Order', readonly=True),
@@ -353,6 +373,8 @@ class sqp_job_cost_sheet(osv.osv):
         'plane_ticket_invoice_list': fields.one2many('sqp.job.cost.sheet.invoice.list', 'order_id', 'Plane Ticket', domain=[('product_id.job_cost_type', '=', 'plane_ticket')], readonly=True),
         'comm_install_invoice_list': fields.one2many('sqp.job.cost.sheet.invoice.list', 'order_id', 'Commission / Installation', domain=[('product_id.job_cost_type', '=', 'comm_install')], readonly=True),
         'other_invoice_list': fields.one2many('sqp.job.cost.sheet.invoice.list', 'order_id', 'Others', domain=[('product_id.job_cost_type', '=', False)], readonly=True),
+        'area_so': fields.function(_area_so, string='Area (sqm) from SO', help="From sales order line with UoM = 'sqm' only"),
+        'area_mo': fields.function(_area_mo, string='Area (sqm) from MO', help="From manufacturing order's product line with formula L/1000 * W/1000 - cut_area")
     }
     _order = 'date'
 
