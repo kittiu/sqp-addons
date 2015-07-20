@@ -302,10 +302,10 @@ class sqp_job_cost_sheet(osv.osv):
     def _area_so(self, cursor, user, ids, name, arg, context=None):
         res = {}
         for sheet in self.browse(cursor, user, ids, context=context):
-            area = 0.0
-            for line in sheet.order_id.order_line:
-                if line.product_uom and line.product_uom.name.lower() == 'sqm':
-                    area += line.product_uom_qty
+            area = sheet.order_id.area_so
+#             for line in sheet.order_id.order_line:
+#                 if line.product_uom and line.product_uom.name.lower() == 'sqm':
+#                     area += line.product_uom_qty
             res[sheet.id] = area
         return res
     

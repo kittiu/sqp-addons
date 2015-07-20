@@ -35,6 +35,7 @@
     'demo': [],
     'data': ['sqp_job_book_view.xml',
              'product_view.xml',
+             'sale_view.xml',
              'report/sqp_job_cost_sheet_view.xml'],
     'test': [
     ],

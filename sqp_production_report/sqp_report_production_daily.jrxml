@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sqp_report_production_status" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.239669421487604"/>
+	<property name="ireport.zoom" value="1.9965000000000024"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="table" lineSpacing="Single">
@@ -105,7 +105,7 @@ join mrp_production mo on mo.id = history.mo_id
 join product_product pp on pp.id = history.product_id
 left outer join bom_choice_thick thick on thick.id = pp."T"
 join sale_order so on so.id = mo.order_id
-order by dept, date, so.name, history.line_number) a
+order by dept, date, history.line_number, so.name) a
 where a.dept = $P{dept}]]>
 	</queryString>
 	<field name="date" class="java.util.Date"/>
@@ -139,19 +139,19 @@ where a.dept = $P{dept}]]>
 ($F{L} == null ? 0.0 : $F{L}) *
 ($V{normal_qty} + $V{ot_qty}) / 1000000]]></variableExpression>
 	</variable>
-	<variable name="total_normal_qty" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
+	<variable name="total_normal_qty" class="java.lang.Number" resetType="Group" resetGroup="SOGroup" calculation="Sum">
 		<variableExpression><![CDATA[$V{normal_qty}]]></variableExpression>
 	</variable>
-	<variable name="total_ot_qty" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
+	<variable name="total_ot_qty" class="java.lang.Number" resetType="Group" resetGroup="SOGroup" calculation="Sum">
 		<variableExpression><![CDATA[$V{ot_qty}]]></variableExpression>
 	</variable>
-	<variable name="total_total_qty" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
+	<variable name="total_total_qty" class="java.lang.Number" resetType="Group" resetGroup="SOGroup" calculation="Sum">
 		<variableExpression><![CDATA[$V{total_qty}]]></variableExpression>
 	</variable>
-	<variable name="total_sqm" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
+	<variable name="total_sqm" class="java.lang.Number" resetType="Group" resetGroup="SOGroup" calculation="Sum">
 		<variableExpression><![CDATA[$V{sqm}]]></variableExpression>
 	</variable>
-	<variable name="total_order_qty" class="java.lang.Number" resetType="Group" resetGroup="UniqueID" calculation="Sum">
+	<variable name="total_order_qty" class="java.lang.Number" resetType="Group" resetGroup="SOGroup" calculation="Sum">
 		<variableExpression><![CDATA[$F{order_qty}]]></variableExpression>
 	</variable>
 	<variable name="total_normal_qty_1" class="java.lang.Number" calculation="Sum">
@@ -171,6 +171,21 @@ where a.dept = $P{dept}]]>
 	</variable>
 	<variable name="line_number" class="java.lang.String">
 		<variableExpression><![CDATA[$F{line_number}]]></variableExpression>
+	</variable>
+	<variable name="total_normal_qty_2" class="java.lang.Number" resetType="Group" resetGroup="LineGroup" calculation="Sum">
+		<variableExpression><![CDATA[$V{normal_qty}]]></variableExpression>
+	</variable>
+	<variable name="total_ot_qty_2" class="java.lang.Number" resetType="Group" resetGroup="LineGroup" calculation="Sum">
+		<variableExpression><![CDATA[$V{ot_qty}]]></variableExpression>
+	</variable>
+	<variable name="total_total_qty_2" class="java.lang.Number" resetType="Group" resetGroup="LineGroup" calculation="Sum">
+		<variableExpression><![CDATA[$V{total_qty}]]></variableExpression>
+	</variable>
+	<variable name="total_sqm_2" class="java.lang.Number" resetType="Group" resetGroup="LineGroup" calculation="Sum">
+		<variableExpression><![CDATA[$V{sqm}]]></variableExpression>
+	</variable>
+	<variable name="total_order_qty_2" class="java.lang.Number" resetType="Group" resetGroup="LineGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{order_qty}]]></variableExpression>
 	</variable>
 	<group name="Total">
 		<groupExpression><![CDATA[$F{dept}]]></groupExpression>
@@ -220,8 +235,8 @@ where a.dept = $P{dept}]]>
 			</band>
 		</groupFooter>
 	</group>
-	<group name="UniqueID">
-		<groupExpression><![CDATA[$F{so}+$F{dept}+$F{line_number}]]></groupExpression>
+	<group name="LineGroup">
+		<groupExpression><![CDATA[$F{dept}+$F{line_number}]]></groupExpression>
 		<groupHeader>
 			<band height="19">
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
@@ -245,19 +260,61 @@ where a.dept = $P{dept}]]>
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="36">
+			<band height="25">
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="1" y="0" width="560" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
+					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="1" y="0" width="560" height="20" forecolor="#000000" backcolor="#CDCDCD"/>
 					<textElement verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="601" y="0" width="40" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
+					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="601" y="0" width="40" height="20" forecolor="#000000" backcolor="#CDCDCD"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_normal_qty}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_normal_qty_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="641" y="0" width="40" height="20" forecolor="#000000" backcolor="#CDCDCD"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_ot_qty_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="732" y="0" width="90" height="20" forecolor="#000000" backcolor="#CDCDCD"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_sqm_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="561" y="0" width="40" height="20" forecolor="#000000" backcolor="#CDCDCD"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_order_qty_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="681" y="0" width="51" height="20" forecolor="#000000" backcolor="#CDCDCD"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_total_qty_2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="SOGroup">
+		<groupExpression><![CDATA[$F{dept}+$F{line_number}+$F{so}]]></groupExpression>
+		<groupFooter>
+			<band height="20">
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="561" y="0" width="40" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_order_qty}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="641" y="0" width="40" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
@@ -274,11 +331,11 @@ where a.dept = $P{dept}]]>
 					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_sqm}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="561" y="0" width="40" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
+					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="601" y="0" width="40" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_order_qty}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_normal_qty}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="681" y="0" width="51" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
@@ -286,6 +343,12 @@ where a.dept = $P{dept}]]>
 						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
 					</textElement>
 					<textFieldExpression class="java.lang.Number"><![CDATA[$V{total_total_qty}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement style="table" stretchType="RelativeToTallestObject" mode="Opaque" x="1" y="0" width="560" height="20" forecolor="#000000" backcolor="#E5E5E5"/>
+					<textElement verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="Monospaced" size="8" isBold="true" pdfFontName="Garuda.ttf" pdfEncoding="Identity-H"/>
+					</textElement>
 				</textField>
 			</band>
 		</groupFooter>
